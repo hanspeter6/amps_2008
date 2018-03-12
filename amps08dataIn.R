@@ -350,7 +350,7 @@ media_type_08_simple <- data.frame(cbind(qn = demogrs_08$qn,
                                   scale(rowSums(radio_engagement_08)),
                                   scale(rowSums(tv_engagement_08)),
                                   scale(internet_engagement_08_simple)))
-names(media_type_08) <- c("qn",
+names(media_type_08_simple) <- c("qn",
                           "newspapers",
                           "magazines",
                           "radio",
@@ -378,7 +378,7 @@ saveRDS(media_vehicles_08_simple, 'media_vehicles_08_simple.rds')
 
 media_type_08.rds <- readRDS('media_type_08.rds')
 media_vehicles_08 <- readRDS('media_vehicles_08.rds')
-media_type_08_simple.rds <- readRDS('media_type_08_simple.rds')
+media_type_08_simple <- readRDS('media_type_08_simple.rds')
 media_vehicles_08_simple <- readRDS('media_vehicles_08_simple.rds')
 
 ## 4th Demographics Set (see notes for descriptions)
