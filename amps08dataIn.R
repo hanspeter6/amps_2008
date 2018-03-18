@@ -58,31 +58,6 @@ saveRDS(names_print_08, "names_print_08.rds")
 
 names_print_08 <- readRDS("names_print_08.rds")
 
-# names_dailies_08 <- names_print_08[1:22]
-# names_biweeklies_08 <- names_print_08[23]
-# names_weeklies_08 <- names_print_08[24:52]
-
-# # NBNB: Not community papers in 2008...
-# names_community_cape_town <- names_print[40:51]
-# names_community_restCape <- names_print[52:61]
-# names_community_FreeState <- names_print[62:66]
-# names_community_NWest <- names_print[67:68]
-# names_community_Jhb <- names_print[69]
-# names_community_ERand <- names_print[70:71]
-# names_community_KZn <- names_print[72:74]
-# 
-# names_mags_weekly_08 <- names_print_08[53:65]
-# names_fortnightly_mags_08 <- names_print_08[66:67]
-# names_monthly_news_08 <- names_print_08[68:69]
-# names_monthly_mags_08 <- names_print_08[70:087]
-# 
-# names_alt_monthly_08 <- names_print_08[150:161]
-# names_quarterly_mags_08 <- names_print_08[164:168]
-# 
-# names_monthly_store_mags_08 <- names_print_08[088:089]
-# names_alt_month_store_mags_08 <- names_print_08[162:163]
-# names_quarterly_store_mags_08 <- names_print_08[169:172]
-
 # create print dataset:
 issues_08 <- print_08[,str_detect(names(print_08), 'ca[345678]co\\d{2}')]
 
@@ -173,27 +148,6 @@ radio7days_08 <- radio7days_08[,c(24:88,92)]   # get rid of tails...
 
 radioYesterday_08 <- electr_08[,str_detect(names(electr_08), 'ca40co[456]')]
 radioYesterday_08 <- radioYesterday_08[,c(22:79, 84)]  # get rid of "unsure" and "none" etc..
-
-# # identifying missing stations by changing all to "64"
-# a <- names(radio4weeks_08)
-# b <- names(radio7days_08)
-# c <- names(radioYesterday_08)
-# b_adj <- b %>%
-#         str_replace("65", "64")
-# c_adj <- c %>%
-#         str_replace("66", "64")
-# 
-# names(radio7days_08) <- b_adj
-# names(radioYesterday_08) <- c_adj
-# 
-# ind_7 <- which(names(radio4weeks_08) %in% names(radio7days_08))
-# ind_y <- which(names(radio4weeks_08) %in% names(radioYesterday_08))
-# 
-# # adding up
-# radio4weeks_08[,ind_7] <- radio4weeks_08[,ind_7] + radio7days_08
-# radio4weeks_08[,ind_y] <- radio4weeks_08[,ind_y] + radioYesterday_08
-
-
 
 # creating engagement set:
 radio_engagement_08 <- radio4weeks_08
@@ -332,30 +286,36 @@ internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
 
 # Level 1: Type
 media_type_08 <- data.frame(cbind(qn = demogrs_08$qn,
-                                  scale(rowSums(newspapers_engagement_08)),
-                                  scale(rowSums(magazines_engagement_08)),
-                                  scale(rowSums(radio_engagement_08)),
-                                  scale(rowSums(tv_engagement_08)),
-                                  scale(rowSums(internet_engagement_08))))
+                                  rowSums(newspapers_engagement_08),
+                                  rowSums(magazines_engagement_08),
+                                  rowSums(radio_engagement_08),
+                                  rowSums(tv_engagement_08),
+                                  rowSums(internet_engagement_08)))
 names(media_type_08) <- c("qn",
                           "newspapers",
                           "magazines",
                           "radio",
                           "tv",
                           "internet")
+media_type_08 <- media_type_08 %>%
+        mutate(all = as.vector(newspapers + magazines + radio + tv + internet)) 
+
 
 media_type_08_simple <- data.frame(cbind(qn = demogrs_08$qn,
-                                  scale(rowSums(newspapers_engagement_08)),
-                                  scale(rowSums(magazines_engagement_08)),
-                                  scale(rowSums(radio_engagement_08)),
-                                  scale(rowSums(tv_engagement_08)),
-                                  scale(internet_engagement_08_simple)))
+                                  rowSums(newspapers_engagement_08),
+                                  rowSums(magazines_engagement_08),
+                                  rowSums(radio_engagement_08),
+                                  rowSums(tv_engagement_08),
+                                  internet_engagement_08_simple))
 names(media_type_08_simple) <- c("qn",
                           "newspapers",
                           "magazines",
                           "radio",
                           "tv",
                           "internet")
+media_type_08_simple <- media_type_08_simple %>%
+        mutate(all = as.vector(newspapers + magazines + radio + tv + internet)) 
+
 # Level 2: Vehicles
 media_vehicles_08 <- data.frame(cbind(qn = demogrs_08$qn,
                                       newspapers_engagement_08,
@@ -426,40 +386,14 @@ table(metro)
 lang <- as.numeric(demogrs_08[,'ca91co75']) # here no need to change 0 to 1...?either?
 lifestages <- demogrs_08[,'ca91co77']
 mar_status <- personal_08[,'ca48co09']
-# pers_inc1 <- personal_08[,'ca57co61']
-# pers_inc2 <- personal_08[,'ca57co62'] + 10
-# pers_inc3 <- personal_08[,'ca57co63'] + 20
-# pers_inc4 <- personal_08[,'ca57co64'] + 30
-# for(i in 1: length(pers_inc4)) {
-#         if(!is.na(pers_inc4[i])) {
-#                 if(pers_inc4[i] == 31) {
-#                         pers_inc4[i] <- 0
-#                 }
-#                 if(pers_inc4[i] == 32) {
-#                         pers_inc4[i] <- 60
-#                 }
-#         }
-# }
-# pers_inc <- rowSums(cbind(pers_inc1,
-#                           pers_inc2,
-#                           pers_inc3,
-#                           pers_inc4), na.rm = TRUE)
+        
 lsm <- lsm_08[,'ca91co64']
 lsm <- ifelse(lsm == 0,10,lsm)
 
 
 # lifestyle groups total groups lsm groups 1:10
 #Value	Category (changed by 1)
-#0	None
-#1	Cell Sophisticates
-#2	Outdoors
-#3	Avid Readers
-#4	Sports
-#5	Traditionals
-#6	Gamers
-#7	Studious
-#8	Showgoers
-# lifestyle <- lsm_08[,'ca52co45']# + 1 # to get rid of zero
+lifestyle <- lsm_08[,'ca52co45'] + 1 # to get rid of zero
 
 # attitudes::
 # want:
@@ -498,13 +432,89 @@ demographics_08 <- data.frame(qn = demogrs_08$qn,
                               lang,
                               lifestages,
                               mar_status,
-                              # pers_inc,
                               lsm,
-                              # lifestyle,
+                              lifestyle,
                               attitudes)
 
 
-# save as
+
+#reducing levels of categorical variables and setting factor types for demographics:
+# age:
+demographics_08$age <- ifelse(demographics_08$age %in% c(1,2), 1, demographics_08$age)
+demographics_08$age <- ifelse(demographics_08$age %in% c(3,4), 2, demographics_08$age)
+demographics_08$age <- ifelse(demographics_08$age %in% c(5,6), 3, demographics_08$age)
+demographics_08$age <- ifelse(demographics_08$age %in% c(7,8), 4, demographics_08$age)
+demographics_08$age <- factor(demographics_08$age, ordered = TRUE)
+
+# sex:
+demographics_08$sex <- factor(demographics_08$sex, ordered = FALSE)
+
+#edu:
+demographics_08$edu <- ifelse(demographics_08$edu %in% c(1,2,3,4), 1, demographics_08$edu)
+demographics_08$edu <- ifelse(demographics_08$edu %in% c(5), 2, demographics_08$edu)
+demographics_08$edu <- ifelse(demographics_08$edu %in% c(6,7,8), 3, demographics_08$edu)
+demographics_08$edu <- factor(demographics_08$edu, ordered = TRUE)
+
+#hh_inc
+demographics_08$hh_inc <- ifelse(demographics_08$hh_inc %in% c(1,2,3,4), 1, demographics_08$hh_inc)
+demographics_08$hh_inc <- ifelse(demographics_08$hh_inc %in% c(5,6), 2, demographics_08$hh_inc)
+demographics_08$hh_inc <- ifelse(demographics_08$hh_inc %in% c(7), 3, demographics_08$hh_inc)
+demographics_08$hh_inc <- ifelse(demographics_08$hh_inc %in% c(8), 4, demographics_08$hh_inc)
+demographics_08$hh_inc <- factor(demographics_08$hh_inc, ordered = TRUE)
+
+demographics_08$race <- factor(demographics_08$race, ordered = FALSE)
+demographics_08$province <- factor(demographics_08$province, ordered = FALSE)
+demographics_08$metro <- factor(demographics_08$metro, ordered = FALSE)
+demographics_08$lang <- factor(demographics_08$lang, ordered = FALSE)
+demographics_08$lifestages <- factor(demographics_08$lifestages, ordered = FALSE)
+demographics_08$mar_status <- factor(demographics_08$mar_status, ordered = FALSE)
+
+# lsm
+demographics_08$lsm <- ifelse(demographics_08$lsm %in% c(1,2), 1, demographics_08$lsm)
+demographics_08$lsm <- ifelse(demographics_08$lsm %in% c(3,4), 2, demographics_08$lsm)
+demographics_08$lsm <- ifelse(demographics_08$lsm %in% c(5,6), 3, demographics_08$lsm)
+demographics_08$lsm <- ifelse(demographics_08$lsm %in% c(7,8), 4, demographics_08$lsm)
+demographics_08$lsm <- ifelse(demographics_08$lsm %in% c(9,10), 5, demographics_08$lsm)
+demographics_08$lsm <- factor(demographics_08$lsm, ordered = TRUE)
+
+demographics_08$lifestyle <- factor(demographics_08$lifestyle, ordered = FALSE)
+demographics_08$attitudes <- factor(demographics_08$attitudes, ordered = FALSE)
 
 saveRDS(demographics_08, "demographics_08.rds")
 demographics_08 <- readRDS("demographics_08.rds")
+
+# read datafiles again (if necessary)
+magazines_engagement_08 <- readRDS("magazines_engagement_08.rds")
+newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
+radio_engagement_08 <- readRDS("radio_engagement_08.rds")
+tv_engagement_08 <- readRDS("tv_engagement_08.rds")
+internet_engagement_08 <- readRDS("internet_engagement_08.rds")
+internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
+
+media_type_08 <- readRDS("media_type_08.rds")
+media_type_08_simple <- readRDS("media_type_08_simple.rds")
+media_vehicles_08 <- readRDS("media_vehicles_08.rds")
+media_vehicles_08_simple <- readRDS("media_vehicles_08_simple.rds")
+
+demographics_08 <- readRDS("demographics_08.rds")
+
+# #create single dataset minus non metropolitans
+set08 <- demographics_08 %>%
+        left_join(media_type_08) %>%
+        left_join(media_vehicles_08) %>%
+        filter(metro != 0)
+
+set08_simple <- demographics_08 %>%
+        left_join(media_type_08_simple) %>%
+        left_join(media_vehicles_08_simple) %>%
+        filter(metro != 0)
+
+# scale media type and media vehicles
+set08[,16:274] <- scale(set08[,16:274])
+set08_simple[,16:269] <- scale(set08_simple[,16:269])
+
+# save them:
+saveRDS(set08, "set08.rds")
+saveRDS(set08_simple, "set08_simple.rds")
+
+
