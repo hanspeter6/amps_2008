@@ -2,6 +2,7 @@
 library(stringr)
 library(tidyverse)
 library(readstata13)
+library(caret)
 
 print_08 <- read.dta13("stata/amps-2008-newspaper-magazine-readership-v1.1.dta")
 electr_08 <- read.dta13("stata/amps-2008-electronic-media-v1.1.dta")
@@ -509,9 +510,23 @@ set08_simple <- demographics_08 %>%
         left_join(media_vehicles_08_simple) %>%
         filter(metro != 0)
 
+# get rid of zero variances:
+ind_08 <- nearZeroVar(set08[,16:ncol(set08)], saveMetrics = TRUE)
+ind_08_simple <- nearZeroVar(set08_simple[,16:ncol(set08_simple)], saveMetrics = TRUE)
+
+good_set <- set08[,16:ncol(set08)][,!ind_08$zeroVar]
+good_set_simple <- set08_simple[,16:ncol(set08_simple)][,!ind_08_simple$zeroVar]
+
+set08 <- data.frame(cbind(set08[,1:15], good_set))
+set08_simple <- data.frame(cbind(set08_simple[,1:15], good_set_simple))
+
 # scale media type and media vehicles
-set08[,16:274] <- scale(set08[,16:274])
-set08_simple[,16:269] <- scale(set08_simple[,16:269])
+set08[,16:ncol(set08)] <- scale(set08[,16:ncol(set08)])
+set08_simple[,ncol(set08_simple)] <- scale(set08_simple[,ncol(set08_simple)])
+
+# correct stupid anomoly
+set08_simple$internet_engagement_08_simple <- as.vector(set08_simple$internet_engagement_08_simple)
+
 
 # save them:
 saveRDS(set08, "set08.rds")
