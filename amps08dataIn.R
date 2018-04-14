@@ -19,83 +19,69 @@ load("input_08.RData")
 # 
 print_08_labels <- readLines("stata/amps_2008_print_variable_labels.txt")
 electr_08_labels <- readLines("stata/amps_2008_electronic_variable_labels.txt")
-# internet_08_labels <- readLines("stata/amps_2008_internet_variable_labels.txt")
-# demogrs_08_labels <- readLines("stata/amps_2008_demographics_variable_labels.txt")
-# personal_08_labels <- readLines("stata/amps_2008_personal_variable_labels.txt")
-# lsm_08_labels <- readLines("stata/amps_2008_lsm_variable_labels.txt")
-# lifestage_08_labels <- readLines("stata/amps_2008_lifestages_variable_labels.txt")
-# attitudes_08_labels <- readLines("stata/amps_2008_attitudes_variable_labels.txt")
-# 
-# 
-# # 
-# save(print_08_labels, electr_08_labels, internet_08_labels, demogrs_08_labels, personal_08_labels, lsm_08_labels, lifestage_08_labels, attitudes_08_labels, file = "labels_08.RData")
-# # 
-# load("labels_08.RData")
 
 ## 1st Print (newspapers and magazines) Media Set
 
-names_print_08 <- str_subset(print_08_labels, 'Number of different issues usually read') %>%
+## ISSUES
+names_issues_print_08 <- str_subset(print_08_labels, 'Number of different issues usually read') %>%
         str_replace('.+\\s-', '') %>%
         str_trim()
+vars_issues_print_08 <- str_subset(print_08_labels, 'Number of different issues usually read') %>%
+        str_replace('Number\\sof\\sdifferent.+', '') %>%
+        str_trim()
 
-check_2012 <- readRDS("names_print_12_copy.rds")
-# 
-# ind_correct_12 <- which(check_2012 %in% names_print_08)
-# 
-# diff_12 <- check_2012[-ind_correct_12]
-# 
-# ind_correct_08 <- which(names_print_08 %in% check_2012)
-# 
-# diff_08 <- names_print_08[-ind_correct_08]
-# 
-# fix(diff_08)
-# 
-# names_print_08[-ind_correct_08] <- diff_08
+##Newspapers
+# fix names and get rid of some and save
+names_newspapers_08_issues <- names_issues_print_08[c(1:48)]
+fix(names_newspapers_08_issues)
+saveRDS(names_newspapers_08_issues, "names_newspapers_08_issues.rds")
+names_newspapers_08_issues <- readRDS("names_newspapers_08_issues.rds")
 
+# vector of variables
+vars_newspapers_08_issues <- vars_issues_print_08[c(1:48)]
+issues_newspapers_08 <- print_08[,vars_newspapers_08_issues]
 
-# fix(names_print_08)
+# Magazines
+# fix names and get rid of some (including MNet guides and save
+names_magazines_08_issues <- names_issues_print_08[c(50:62,64:74,76:79,82:103,105:109,112:145,147:148,150:161, 163:166,168:169)]
+fix(names_magazines_08_issues)
+saveRDS(names_magazines_08_issues, "names_magazines_08_issues.rds")
+names_magazines_08_issues <- readRDS("names_magazines_08_issues.rds")
 
-saveRDS(names_print_08, "names_print_08.rds")
+# vector of variables
+vars_magazines_08_issues <- vars_issues_print_08[c(50:62,64:74,76:79,82:103,105:109,112:145,147:148,150:161, 163:166,168:169)]
+issues_magazines_08 <- print_08[,vars_magazines_08_issues]
 
-names_print_08 <- readRDS("names_print_08.rds")
+# create datasets ...for newspapers and magazines:
+newspapers_engagement_08 <- issues_newspapers_08
+names(newspapers_engagement_08) <- names_newspapers_08_issues
+magazines_engagement_08 <- issues_magazines_08
+names(magazines_engagement_08) <- names_magazines_08_issues
 
-# create print dataset:
-issues_08 <- print_08[,str_detect(names(print_08), 'ca[345678]co\\d{2}')]
+# # # replace NAs with zeros
+newspapers_engagement_08[is.na(newspapers_engagement_08)] <- 0
+magazines_engagement_08[is.na(magazines_engagement_08)] <- 0
 
-saveRDS(issues_08, "issues_08.rds")
-# 
-# thorough_08 <- print_08[,str_detect(names(print_08), 'ca((34)|(35)|(36)|(37)|(38)|(39))co\\d{2}')]
-# 
-# # one extra in thrrough.. Elle Decorations
-# 
-# thorough_08 <- thorough_08[,-which(names(thorough_08) == 'ca38co50')] # get rid of elle decorations
-# 
-# names(thorough_08) <- names_print_08
-# 
-# # # need to reverse numbering to serve as weights (see value_lables text file):
-# thorough_08 <- 7 - thorough_08
-# 
-# saveRDS(thorough_08, "thorough_08.rds")
-# # create single print dataset:
+# CLEAN UP
+# for newspapers: – Included in “Other”: The Weekender, Sondag
+# Son Ooskaap to be coded as “Son” in this dataset
+names(newspapers_engagement_08)[29] <- "Son"
+other.news <- as.vector(apply(newspapers_engagement_08[,c(35,45)], 1, mean))
+newspapers_engagement_08 <- newspapers_engagement_08 %>%
+        mutate(other.news = other.news)
+newspapers_engagement_08 <- newspapers_engagement_08[,-c(35,45)]
 
-print_engagement_08 <- issues_08
+# for magazines - deal with it in vehicle_cleaning project
 
-# replace nas with zero's:
-print_engagement_08[is.na(print_engagement_08)] <- 0
-names(print_engagement_08) <- names_print_08
-
-saveRDS(print_engagement_08, "print_engagement_08.rds")
-
-print_engagement_08 <- readRDS("print_engagement_08.rds")
-
-newspapers_engagement_08 <- print_engagement_08[,c(1:48)]
-magazines_engagement_08 <- print_engagement_08[,c(49:170)]
-
+# save them
 saveRDS(newspapers_engagement_08, "newspapers_engagement_08.rds")
 saveRDS(magazines_engagement_08, "magazines_engagement_08.rds")
 
 magazines_engagement_08 <- readRDS("magazines_engagement_08.rds")
 newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
+
+
+# thorough would be here, but ....none in 2005 and 2008...
 
 
 
@@ -111,6 +97,7 @@ names_radio_08_4w <- electr_08_labels %>%
         str_subset('Radio station listened to in the past 4 weeks') %>%
         str_replace('.+\\s-\\s','') %>%
         str_trim()
+
 # # get rid of tail lines
 # names_radio_08_4w <- names_radio_08_4w[1:100] # get rid of summaries & "unsure" &"none"
 
@@ -164,9 +151,7 @@ radio_engagement_08 <- readRDS("radio_engagement_08.rds")
 
 check_tv_names_12 <- readRDS("names_tv_12_copy.rds")
 
-names_tv_08 <- c("e TV",
-                 "MNet Main",
-                 # "MNet CSN",
+names_tv_08 <- c("e tv",
                  "SABC 1",
                  "SABC 2",
                  "SABC 3",
@@ -182,8 +167,6 @@ names_tv_08 <- readRDS("names_tv_08.rds")
 
 
 tv4weeks_08 <- electr_08[,c('ca39co14_4', #e TV
-                            'ca39co14_5', #MNet Main
-                            # 'ca39co14_6', # MNet CSN
                             'ca39co14_7', #SABC 1
                             'ca39co14_8', #SABC 2
                             'ca39co14_9', #SABC 3
@@ -194,8 +177,6 @@ tv4weeks_08 <- electr_08[,c('ca39co14_4', #e TV
 
 # want to isolate only past 7 days...
 tv7days_08 <- electr_08[,c('ca39co24_4', #e TV
-                           'ca39co24_5', #MNet Main
-                           # 'ca39co24_6', # MNet CSN
                            'ca39co24_7', #SABC 1
                            'ca39co24_8', #SABC 2
                            'ca39co24_9', #SABC 3
@@ -205,7 +186,6 @@ tv7days_08 <- electr_08[,c('ca39co24_4', #e TV
 
 # want to isolate only yesterday...(indexes w.r.t 4weeks that are missing here: 7, 10)
 tvYesterday_08 <- electr_08[,c('ca39co34_4', #e TV
-                               'ca39co34_5', #MNet Main
                                'ca39co34_7', #SABC 1
                                'ca39co34_8', #SABC 2
                                'ca39co34_9', #SABC 3
