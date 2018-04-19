@@ -19,7 +19,7 @@ library(ggplot2)
 
 #  read in datasets
 set08 <- readRDS("set08.rds")
-set08_simple <- readRDS("set08_simple.rds")
+# set08_simple <- readRDS("set08_simple.rds")
 
 # consider some correlations
 png('corTypePlot2008.png')
@@ -47,29 +47,29 @@ png('kmeansTypePlot2008.png')
 plot(c(1,2,3,4,5,6), wss, type = "b", xlab = "k-values", ylab = "total within sum of squares" )
 dev.off()
 
-set.seed(56)
+set.seed(123)
 kmeans08 <- kmeans(set08[,c("newspapers","magazines","radio", "tv", "internet", "all")],
                    centers = 4,
-                   nstart = 20,
-                   iter.max = 20)
-set.seed(56)
-kmeans08_simple <- kmeans(set08_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
-                   centers = 4,
-                   nstart = 20,
-                   iter.max = 20)
+                   nstart = 5,
+                   iter.max = 100)
+# set.seed(56)
+# kmeans08_simple <- kmeans(set08_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
+#                    centers = 4,
+#                    nstart = 20,
+#                    iter.max = 20)
 
 table(kmeans08$cluster)
 
-# Comparing 2008 with 2010... will change colours if necessary to reflect meaning based on 2012:
+# Comparing 2008 with 2010... will change colours to reflect meanin based on 2012:
 
-# green becomes red:  2 becomes 1
-# red becomes blue: 1 becomes 3
-#  lilac becomes green: 4 becomes 2
-#  blue becomes lilac: 3 becomes 4
+# green becomes lilac: 2 -> 4
+# lilac becomes red: 4 -> 1
+# red becomes blue: 1 -> 3
+#  blue becomes green: 3 -> 2
 kmeans08$cluster <- ifelse(kmeans08$cluster == 1, 8, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 2, 6, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 3, 9, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 4, 7, kmeans08$cluster)
+kmeans08$cluster <- ifelse(kmeans08$cluster == 2, 9, kmeans08$cluster)
+kmeans08$cluster <- ifelse(kmeans08$cluster == 3, 7, kmeans08$cluster)
+kmeans08$cluster <- ifelse(kmeans08$cluster == 4, 6, kmeans08$cluster)
 kmeans08$cluster <- kmeans08$cluster - 5
 
 
@@ -77,16 +77,16 @@ kmeans08$cluster <- kmeans08$cluster - 5
 set08c <- set08 %>%
         mutate(cluster = factor(kmeans08$cluster)) %>%
         dplyr::select(qn, pwgt, cluster, everything())
-# 
-set08c_simple <- set08_simple %>% ### sort out bloody internet thingy
-        mutate(cluster = factor(kmeans08_simple$cluster)) %>%
-        dplyr::select(qn, pwgt, cluster, everything())
+# # 
+# set08c_simple <- set08_simple %>% ### sort out bloody internet thingy
+#         mutate(cluster = factor(kmeans08_simple$cluster)) %>%
+#         dplyr::select(qn, pwgt, cluster, everything())
 
 saveRDS(set08c, "set08c.rds")
-saveRDS(set08c_simple, "set08c_simple.rds")
+# saveRDS(set08c_simple, "set08c_simple.rds")
 
 set08c <- readRDS("set08c.rds")
-set08c_simple <- readRDS("set08c_simple.rds")
+# set08c_simple <- readRDS("set08c_simple.rds")
 
 # some plots
 # boxplots of clusters and media types

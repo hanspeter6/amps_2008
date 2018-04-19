@@ -19,7 +19,7 @@ library(ggplot2)
 
 # load datafiles 
 set08c <- readRDS("set08c.rds")
-set08c_simple <- readRDS("set08c_simple.rds")
+# set08c_simple <- readRDS("set08c_simple.rds")
 
 # LEVEL 2
 
@@ -66,7 +66,7 @@ nuSet08_JHB$lsm <- scale(as.numeric(nuSet08_JHB$lsm))
 # Cape Town
 nuSet08_CT$cluster <- factor(nuSet08_CT$cluster,
                              levels = c(1,2,3,4),
-                             labels = c("heavy all media", "internet lead", "light all media", "internet lag"))
+                             labels = c("cluster1", "cluster2", "cluster3", "cluster4"))
 nuSet08_CT$sex <- factor(nuSet08_CT$sex,
                          levels = c(1,2),
                          labels = c("male", "female"))
@@ -90,7 +90,7 @@ nuSet08_CT$attitudes <- factor(nuSet08_CT$attitudes,
 # 
 nuSet08_JHB$cluster <- factor(nuSet08_JHB$cluster,
                               levels = c(1,2,3,4),
-                              labels = c("heavy all media", "internet lead", "light all media", "internet lag"))
+                              labels = c("cluster1", "cluster2", "cluster3", "cluster4"))
 nuSet08_JHB$sex <- factor(nuSet08_JHB$sex,
                           levels = c(1,2),
                           labels = c("male", "female"))
@@ -111,8 +111,8 @@ nuSet08_JHB$attitudes <- factor(nuSet08_JHB$attitudes,
                                 labels = c("none", "now generation", "nation builders", "distants survivors", "distants established", "rooted", "global citizens"))
 
 # focussing only on the variable I intend to use in this section:
-nuSet08_CT <- nuSet08_CT[,-c(1:2,9:11, 17:22)]
-nuSet08_JHB <- nuSet08_JHB[,-c(1:2,9:11, 17:22)]
+nuSet08_CT <- nuSet08_CT[,-c(1:2,9:13,15:22)]
+nuSet08_JHB <- nuSet08_JHB[,-c(1:2,9:13,15:22)]
 
 # saving these objects:
 saveRDS(nuSet08_CT, "nuSet08_CT.rds")
@@ -122,16 +122,16 @@ nuSet08_CT <- readRDS("nuSet08_CT.rds")
 nuSet08_JHB <- readRDS("nuSet08_JHB.rds")
 # 
 # ## Determine Number of Factors to Extract
-# ev_ct <- eigen(cor(nuSet08_CT[,12:ncol(nuSet08_CT)]))
-# ap_ct <- parallel(subject=nrow(nuSet08_CT[,12:ncol(nuSet08_CT)]),var=ncol(nuSet08_CT[,12:ncol(nuSet08_CT)]),
+# ev_ct <- eigen(cor(nuSet08_CT[,8:ncol(nuSet08_CT)]))
+# ap_ct <- parallel(subject=nrow(nuSet08_CT[,8:ncol(nuSet08_CT)]),var=ncol(nuSet08_CT[,8:ncol(nuSet08_CT)]),
 #                rep=100,cent=.05)
 # nS_ct <- nScree(x=ev_ct$values, aparallel=ap_ct$eigen$qevpea)
 # jpeg("nScree_08_ct")
 # plotnScree(nS_ct, main = "Cape Town") # optimal = 7
 # dev.off()
 # 
-# ev_jhb <- eigen(cor(nuSet08_JHB[,12:ncol(nuSet08_JHB)]))
-# ap_jhb <- parallel(subject=nrow(nuSet08_JHB[,12:ncol(nuSet08_JHB)]),var=ncol(nuSet08_JHB[,12:ncol(nuSet08_JHB)]),
+# ev_jhb <- eigen(cor(nuSet08_JHB[,8:ncol(nuSet08_JHB)]))
+# ap_jhb <- parallel(subject=nrow(nuSet08_JHB[,8:ncol(nuSet08_JHB)]),var=ncol(nuSet08_JHB[,8:ncol(nuSet08_JHB)]),
 #                rep=100,cent=.05)
 # nS_jhb <- nScree(x=ev_jhb$values, aparallel=ap_jhb$eigen$qevpea)
 # jpeg("nScree_08_jhb")
@@ -148,14 +148,14 @@ npc_jhb <- 6
 # creating objects with supplementary variables (qualitative and quantitative) and active one defined:
 set.seed(56)
 pca_08_ct <- PCA(nuSet08_CT,
-                 quanti.sup = c(2,4,5,9),
-                 quali.sup = c(1,3,6,7,8,10,11),
+                 quanti.sup = c(2,4,5,7),
+                 quali.sup = c(1,3,6),
                  ncp = npc_ct,
                  graph = FALSE)
 set.seed(56)
 pca_08_jhb <- PCA(nuSet08_JHB,
-                  quanti.sup = c(2,4,5,9),
-                  quali.sup = c(1,3,6,7,8,10,11),
+                  quanti.sup = c(2,4,5,7),
+                  quali.sup = c(1,3,6),
                   ncp = npc_jhb,
                   graph = FALSE)
 # save for later use:
@@ -735,6 +735,21 @@ ml_jhb_5n6 <- marrangeGrob(list(gt_cat_jhb5,
 jpeg("cats08_jhb_5n6.jpeg")
 ml_jhb_5n6
 dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # continuous supplementaries per dimension...explain difference... blah blah
 # cape town:
