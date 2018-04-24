@@ -736,21 +736,6 @@ jpeg("cats08_jhb_5n6.jpeg")
 ml_jhb_5n6
 dev.off()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # continuous supplementaries per dimension...explain difference... blah blah
 # cape town:
 
@@ -803,6 +788,13 @@ ml_cont_ct_jhb <- marrangeGrob(list(gt_cont_ct,gt_cont_jhb), nrow=2, ncol=1,
 jpeg("cont_08_ct_jhb.jpeg")
 ml_cont_ct_jhb
 dev.off()
+
+
+
+
+
+
+
 
 
 # cant figure out why the image looks so very different to the simple PCA version above...??? expected the same..
