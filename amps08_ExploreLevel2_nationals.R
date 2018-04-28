@@ -96,6 +96,41 @@ pca_08_nat <- PCA(set08_nat,
                   quali.sup = c(2,5),
                   ncp = npc,
                   graph = FALSE)
+saveRDS(pca_08_nat, "pca_08_nat.rds")
+
+
+
+
+# try pa method of factor analysis with oblimin rotation allowed....to try and get better estimation
+library(psych)
+set.seed(123)
+fact_08 <- fa(set08_nat[7:ncol(set08_nat)], nfactors = 6, fm = "pa") # default rotation oblimin, so does allow correlation between factors
+fact_08_loadings <- fact_08$loadings
+fact_08_scores <- fact_08$scores
+
+# rather try print as table for importing:
+capture.output(print(fact_08$loadings,digits=2,all=FALSE,cut=0.1,sort=TRUE,short=TRUE,lower=TRUE,signif=NULL), file = "loadings.csv", append = FALSE)
+
+
+
+# create table and print out dominant loadings:
+tab_fact_08 <- tableGrob(round(fact_08_loadings,3), theme = ttheme_minimal(base_size = 10)) # table
+
+# grid.newpage()
+# h_fact_08 <- grobHeight(tab_fact_08)
+# w_fact_08 <- grobWidth(tab_fact_08)
+# title_fact_08 <- textGrob("Loadings: 2008", y=unit(0.5,"npc") + 0.5*h_fact_08, 
+#                         vjust=-11, hjust = 0.2, gp=gpar(fontsize=14)) # title
+# gt_fact_08 <- gTree(children = gList(tab_fact_08, title_fact_08)) #,footnote
+# grid.draw(gt_fact_08) # check
+# 
+# # print to graphic
+# jpeg("loadings_08.jpeg")
+# grid.draw(gt_fact_08)
+# dev.off()
+
+
+
 
 # # try FactoInvestigate
 # library(FactoInvestigate)
@@ -184,6 +219,9 @@ ml_nat_1n2 <- marrangeGrob(list(gt_nat_1,gt_nat_2), nrow=1, ncol=2, top = '\n\n\
 jpeg("dims08_nat_1n2.jpeg")
 ml_nat_1n2
 dev.off()
+
+# rather try print as table for importing:
+write.csv()
 
 
 
