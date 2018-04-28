@@ -19,7 +19,7 @@ library(ggplot2)
 
 #  read in datasets
 set08 <- readRDS("set08.rds")
-# set08_simple <- readRDS("set08_simple.rds")
+set08_simple <- readRDS("set08_simple.rds")
 
 # consider some correlations
 png('corTypePlot2008.png')
@@ -52,112 +52,112 @@ kmeans08 <- kmeans(set08[,c("newspapers","magazines","radio", "tv", "internet", 
                    centers = 4,
                    nstart = 5,
                    iter.max = 100)
-# set.seed(56)
-# kmeans08_simple <- kmeans(set08_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
-#                    centers = 4,
-#                    nstart = 20,
-#                    iter.max = 20)
-
-table(kmeans08$cluster)
+set.seed(123)
+kmeans08_simple <- kmeans(set08_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
+                   centers = 4,
+                   nstart = 5,
+                   iter.max = 100)
 
 # Comparing 2008 with 2010... will change colours to reflect meanin based on 2012:
 
-# green becomes lilac: 2 -> 4
+# green becomes blue: 2 -> 3
 # lilac becomes red: 4 -> 1
-# red becomes blue: 1 -> 3
+# red becomes lilac: 1 -> 4
 #  blue becomes green: 3 -> 2
-kmeans08$cluster <- ifelse(kmeans08$cluster == 1, 8, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 2, 9, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 3, 7, kmeans08$cluster)
-kmeans08$cluster <- ifelse(kmeans08$cluster == 4, 6, kmeans08$cluster)
-kmeans08$cluster <- kmeans08$cluster - 5
+
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 1, 9, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 2, 8, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 3, 7, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 4, 6, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- kmeans08_simple$cluster - 5
+
 
 
 # add cluster labels to the dataset
 set08c <- set08 %>%
         mutate(cluster = factor(kmeans08$cluster)) %>%
         dplyr::select(qn, pwgt, cluster, everything())
-# # 
-# set08c_simple <- set08_simple %>% ### sort out bloody internet thingy
-#         mutate(cluster = factor(kmeans08_simple$cluster)) %>%
-#         dplyr::select(qn, pwgt, cluster, everything())
+#
+set08c_simple <- set08_simple %>%
+        mutate(cluster = factor(kmeans08_simple$cluster)) %>%
+        dplyr::select(qn, pwgt, cluster, everything())
 
 saveRDS(set08c, "set08c.rds")
-# saveRDS(set08c_simple, "set08c_simple.rds")
+saveRDS(set08c_simple, "set08c_simple.rds")
 
 set08c <- readRDS("set08c.rds")
-# set08c_simple <- readRDS("set08c_simple.rds")
+set08c_simple <- readRDS("set08c_simple.rds")
 
-# some plots
+## some plots for simple version to use in longitudinal stuff later...
 # boxplots of clusters and media types
-p1 <- ggplot(set08c, aes(cluster, all, fill = cluster)) +
+p1 <- ggplot(set08c_simple, aes(cluster, all, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "all")
-p2 <- ggplot(set08c, aes(cluster, newspapers, fill = cluster)) +
+p2 <- ggplot(set08c_simple, aes(cluster, newspapers, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "newspapers")
-p3 <- ggplot(set08c, aes(cluster, magazines, fill = cluster)) +
+p3 <- ggplot(set08c_simple, aes(cluster, magazines, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "magazines")
-p4 <- ggplot(set08c, aes(cluster, radio, fill = cluster)) +
+p4 <- ggplot(set08c_simple, aes(cluster, radio, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "radio")
-p5 <- ggplot(set08c, aes(cluster, tv, fill = cluster)) +
+p5 <- ggplot(set08c_simple, aes(cluster, tv, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "tv")
-p6 <- ggplot(set08c, aes(cluster, internet, fill = cluster)) +
+p6 <- ggplot(set08c_simple, aes(cluster, internet, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "internet")
 
-jpeg('typeBoxPlots_08.jpeg', quality = 100, type = "cairo")
+jpeg('typeBoxPlots_08_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(p1, p2, p3, p4, p5,p6,  ncol=3, nrow = 2)
 dev.off()
 
 # try to make sense of demographics
-d1 <- ggplot(set08c, aes(race, cluster, fill = cluster)) +
+d1 <- ggplot(set08c_simple, aes(race, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "race", y = "", x = "") +
         scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
-d2 <- ggplot(set08c, aes(edu, cluster, fill = cluster)) +
+d2 <- ggplot(set08c_simple, aes(edu, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "education", y = "", x = "") +
         scale_x_discrete(labels=c("<matric", "matric",">matric"))
-d3 <- ggplot(set08c, aes(age, cluster, fill = cluster)) +
+d3 <- ggplot(set08c_simple, aes(age, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "age", y = "", x = "") +
         scale_x_discrete(labels=c("15-24","25-44", "45-54","55+"))
-d4 <- ggplot(set08c, aes(lsm, cluster, fill = cluster)) +
+d4 <- ggplot(set08c_simple, aes(lsm, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lsm", y = "", x = "") +
         scale_x_discrete(labels=c("1-2", "3-4", "5-6", "7-8", "9-10"))
 
-jpeg('typeDemogPlots1_08.jpeg', quality = 100, type = "cairo")
+jpeg('typeDemogPlots1_08_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(d1, d2, d3, d4, ncol=2, nrow = 2)
 dev.off()
 
-d5 <- ggplot(set08c, aes(sex, cluster, fill = cluster)) +
+d5 <- ggplot(set08c_simple, aes(sex, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "gender", y = "", x = "") +
         scale_x_discrete(labels=c("male", "female"))
-d6 <- ggplot(set08c, aes(hh_inc, cluster, fill = cluster)) +
+d6 <- ggplot(set08c_simple, aes(hh_inc, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "household income", y = "", x = "") +
         scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d7 <- ggplot(set08c, aes(lifestages, cluster, fill = cluster)) +
+d7 <- ggplot(set08c_simple, aes(lifestages, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestages", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d8 <- ggplot(set08c, aes(lifestyle, cluster, fill = cluster)) +
+d8 <- ggplot(set08c_simple, aes(lifestyle, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestyle", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-jpeg('typeDemogPlots2_08.jpeg', quality = 100, type = "cairo")
+jpeg('typeDemogPlots2_08_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(d5, d6, d7, d8, ncol=2, nrow = 2)
 dev.off()
 
