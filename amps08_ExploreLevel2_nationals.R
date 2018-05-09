@@ -108,26 +108,26 @@ fact_08 <- fa(set08_nat[7:ncol(set08_nat)], nfactors = 6, fm = "pa") # default r
 fact_08_loadings <- fact_08$loadings
 fact_08_scores <- fact_08$scores
 
-# rather try print as table for importing:
-capture.output(print(fact_08$loadings,digits=2,all=FALSE,cut=0.1,sort=TRUE,short=TRUE,lower=TRUE,signif=NULL), file = "loadings.csv", append = FALSE)
+
+plot(fact_08, labels = colnames(set08_nat[7:ncol(set08_nat)]), show.points = FALSE, choose = c(4,5))
 
 
 
 # create table and print out dominant loadings:
 tab_fact_08 <- tableGrob(round(fact_08_loadings,3), theme = ttheme_minimal(base_size = 10)) # table
 
-# grid.newpage()
-# h_fact_08 <- grobHeight(tab_fact_08)
-# w_fact_08 <- grobWidth(tab_fact_08)
-# title_fact_08 <- textGrob("Loadings: 2008", y=unit(0.5,"npc") + 0.5*h_fact_08, 
-#                         vjust=-11, hjust = 0.2, gp=gpar(fontsize=14)) # title
-# gt_fact_08 <- gTree(children = gList(tab_fact_08, title_fact_08)) #,footnote
-# grid.draw(gt_fact_08) # check
-# 
-# # print to graphic
-# jpeg("loadings_08.jpeg")
-# grid.draw(gt_fact_08)
-# dev.off()
+grid.newpage()
+h_fact_08 <- grobHeight(tab_fact_08)
+w_fact_08 <- grobWidth(tab_fact_08)
+title_fact_08 <- textGrob("Loadings: 2008", y=unit(0.5,"npc") + 0.5*h_fact_08,
+                        vjust=-11, hjust = 0.2, gp=gpar(fontsize=14)) # title
+gt_fact_08 <- gTree(children = gList(tab_fact_08, title_fact_08)) #,footnote
+grid.draw(gt_fact_08) # check
+
+# print to graphic
+jpeg("loadings_08.jpeg")
+grid.draw(gt_fact_08)
+dev.off()
 
 
 
@@ -199,7 +199,7 @@ w_nat_1 <- grobWidth(tab_nat_1)
 title_nat_1 <- textGrob("Dimension 1", y=unit(0.5,"npc") + 0.5*h_nat_1, 
                         vjust=-6, hjust = 0.2, gp=gpar(fontsize=14)) # title
 gt_nat_1 <- gTree(children = gList(tab_nat_1, title_nat_1)) #,footnote
-# grid.draw(gt_nat_1) # check
+grid.draw(gt_nat_1) # check
 
 # for dimension 2
 tab_nat_2 <- tableGrob(round(dims_nat[[2]], 2), theme = ttheme_minimal(base_size = 10)) # table

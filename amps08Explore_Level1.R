@@ -33,6 +33,24 @@ corrplot(cor(set08[,c("newspapers","magazines","radio", "tv", "internet")]),
          tl.pos = TRUE)
 dev.off()
 
+
+corrplot(cor(set08[,20:]),
+         method = "pie",
+         order = "hclust",
+         hclust.method = "complete",
+         tl.col = 'black',
+         mar = c(1,1,1,1),
+         addCoefasPercent = TRUE,
+         tl.pos = TRUE)
+
+
+
+
+
+
+
+
+
 ## consider kmeans
 wss <- vector()
 for(k in c(1,2,3,4,5,6)) {
@@ -60,18 +78,16 @@ kmeans08_simple <- kmeans(set08_simple[,c("newspapers","magazines","radio", "tv"
 
 # Comparing 2008 with 2010... will change colours to reflect meanin based on 2012:
 
-# green becomes blue: 2 -> 3
-# lilac becomes red: 4 -> 1
+# green becomes red: 2 -> 1
+# lilac becomes blue: 4 -> 3
 # red becomes lilac: 1 -> 4
 #  blue becomes green: 3 -> 2
 
 kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 1, 9, kmeans08_simple$cluster)
-kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 2, 8, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 2, 6, kmeans08_simple$cluster)
 kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 3, 7, kmeans08_simple$cluster)
-kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 4, 6, kmeans08_simple$cluster)
+kmeans08_simple$cluster <- ifelse(kmeans08_simple$cluster == 4, 8, kmeans08_simple$cluster)
 kmeans08_simple$cluster <- kmeans08_simple$cluster - 5
-
-
 
 # add cluster labels to the dataset
 set08c <- set08 %>%
@@ -118,6 +134,27 @@ p6 <- ggplot(set08c_simple, aes(cluster, internet, fill = cluster)) +
 jpeg('typeBoxPlots_08_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(p1, p2, p3, p4, p5,p6,  ncol=3, nrow = 2)
 dev.off()
+
+# ggplot(set08c_simple, aes(race)) +
+#         geom_bar()
+# 
+# 
+#         # labs(title = "race", y = "", x = "") +
+#         # scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
+# 
+# 
+# 
+# # And, even more succinctly with geom_col()
+# df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
+# ggplot(df, aes(trt, outcome)) +
+#         geom_col()
+# # But geom_point() displays exactly the same information and doesn't
+# # require the y-axis to touch zero.
+# ggplot(df, aes(trt, outcome)) +
+#         geom_point()
+# g <- ggplot(mpg, aes(class))
+# # Number of cars in each class:
+# g + geom_bar()
 
 # try to make sense of demographics
 d1 <- ggplot(set08c_simple, aes(race, cluster, fill = cluster)) +

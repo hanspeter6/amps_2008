@@ -492,13 +492,13 @@ demographics_08 <- readRDS("demographics_08.rds")
 # #create single dataset minus non metropolitans
 set08 <- demographics_08 %>%
         left_join(media_type_08) %>%
-        left_join(media_vehicles_08) %>%
-        filter(metro != 0)
+        left_join(media_vehicles_08)
+#%>%filter(metro != 0)
 
 set08_simple <- demographics_08 %>%
         left_join(media_type_08_simple) %>%
-        left_join(media_vehicles_08_simple) %>%
-        filter(metro != 0)
+        left_join(media_vehicles_08_simple)
+#%>%filter(metro != 0)
 
 # get rid of zero variances:
 ind_08 <- nearZeroVar(set08[,16:ncol(set08)], saveMetrics = TRUE)
