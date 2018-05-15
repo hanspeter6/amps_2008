@@ -102,16 +102,6 @@ newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
 magazines_engagement_08_simple <- readRDS("magazines_engagement_08_simple.rds")
 newspapers_engagement_08_simple <- readRDS("newspapers_engagement_08_simple.rds")
 
-
-
-# thorough would be here, but ....none in 2005 and 2008...
-
-
-
-#radio, tv... other.
-# etc...
-
-
 ## 2nd Electronic Media Set
 # RADIO
 
@@ -156,6 +146,9 @@ radio_engagement_08_all <- readRDS("radio_engagement_08_all.rds")
 
 # AFTER CLEANING (see vehicle cleaning project)
 radio_engagement_08 <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/vehicle_cleaning/radio_engagement_08.rds")
+# and save in this workspace
+saveRDS(radio_engagement_08, "radio_engagement_08.rds")
+
 
 ## TV (this year, included specific dstv and toptv channels (will include them))
 
@@ -222,7 +215,6 @@ saveRDS(tv_engagement_08, "tv_engagement_08.rds")
 tv_engagement_08 <- readRDS("tv_engagement_08.rds")
 
 
-
 ## 3rd Internet Media Set
 
 ## accessed: sum of 12 months, 4weeks, 7days and yesterday
@@ -277,11 +269,11 @@ internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
 
 # Level 1: Type
 media_type_08 <- data.frame(cbind(qn = demogrs_08$qn,
-                                  rowSums(newspapers_engagement_08),
-                                  rowSums(magazines_engagement_08),
-                                  rowSums(radio_engagement_08),
-                                  rowSums(tv_engagement_08),
-                                  rowSums(internet_engagement_08)))
+                                  rowSums(scale(newspapers_engagement_08)),
+                                  rowSums(scale(magazines_engagement_08)),
+                                  rowSums(scale(radio_engagement_08)),
+                                  rowSums(scale(tv_engagement_08)),
+                                  rowSums(scale(internet_engagement_08))))
 names(media_type_08) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -293,11 +285,11 @@ media_type_08 <- media_type_08 %>%
 
 
 media_type_08_simple <- data.frame(cbind(qn = demogrs_08$qn,
-                                  rowSums(newspapers_engagement_08_simple),
-                                  rowSums(magazines_engagement_08_simple),
-                                  rowSums(radio_engagement_08),
-                                  rowSums(tv_engagement_08),
-                                  internet_engagement_08_simple))
+                                  rowSums(scale(newspapers_engagement_08_simple)),
+                                  rowSums(scale(magazines_engagement_08_simple)),
+                                  rowSums(scale(radio_engagement_08)),
+                                  rowSums(scale(tv_engagement_08)),
+                                  scale(internet_engagement_08_simple)))
 names(media_type_08_simple) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -476,7 +468,11 @@ demographics_08 <- readRDS("demographics_08.rds")
 
 # read datafiles again (if necessary)
 magazines_engagement_08 <- readRDS("magazines_engagement_08.rds")
+magazines_engagement_08_simple <- readRDS("magazines_engagement_08_simple.rds")
+
 newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
+newspapers_engagement_08_simple <- readRDS("newspapers_engagement_08_simple.rds")
+
 radio_engagement_08 <- readRDS("radio_engagement_08.rds")
 tv_engagement_08 <- readRDS("tv_engagement_08.rds")
 internet_engagement_08 <- readRDS("internet_engagement_08.rds")

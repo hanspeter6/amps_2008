@@ -20,6 +20,10 @@ library(ggplot2)
 # load datafiles 
 set08_nat <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/amps_nationals/set08_nat.rds")
 
+# what _nat have that are not in _min
+names(set08_nat)[which(!names(set08_nat) %in% names(set08_min))]
+
+
 # LEVEL 2
 
 # # get rid of near zero variances:
