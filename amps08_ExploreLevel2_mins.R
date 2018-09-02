@@ -8,12 +8,13 @@ set08_min <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/
 
 # LEVEL 2
 
-# Subsetting only on the variable I intend to use in this section:
-set08_min <- set08_min[,-c(1:2,8:12,14:21)]
+# # Subsetting only on the variable I intend to use in this section:
+# set08_min <- set08_min[,-c(1:2,8:12,14:21)]
 
 # ## Determine Number of Factors to Extract
-ev <- eigen(cor(set08_min[,7:ncol(set08_min)]))
-ap <- parallel(subject=nrow(set08_min[,7:ncol(set08_min)]),var=ncol(set08_min[,7:ncol(set08_min)]),
+strt <- which(names(set08_min) == "Business.Day")
+ev <- eigen(cor(set08_min[,strt:ncol(set08_min)]))
+ap <- parallel(subject=nrow(set08_min[,strt:ncol(set08_min)]),var=ncol(set08_min[,strt:ncol(set08_min)]),
                rep=100,cent=.02)
 nS <- nScree(x=ev$values, aparallel=ap$eigen$qevpea)
 jpeg("nScree_08_min")
@@ -34,7 +35,7 @@ dev.off()
 
 # pa method of factor analysis with oblimin rotation allowed....to try and get better estimation
 set.seed(123)
-fact_08 <- fa(set08_min[7:ncol(set08_min)], nfactors = 7, fm = "ml") # default rotation oblimin, so does allow correlation between factors
+fact_08 <- fa(set08_min[strt:ncol(set08_min)], nfactors = 7, fm = "ml", scores = "Bartlett") # default rotation oblimin, so does allow correlation between factors
 fact_08_loadings <- fact_08$loadings
 fact_08_scores <- fact_08$scores
 

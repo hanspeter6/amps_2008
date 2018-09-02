@@ -145,10 +145,11 @@ saveRDS(radio_engagement_08_all, "radio_engagement_08_all.rds")
 radio_engagement_08_all <- readRDS("radio_engagement_08_all.rds")
 
 # AFTER CLEANING (see vehicle cleaning project)
-radio_engagement_08 <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/vehicle_cleaning/radio_engagement_08.rds")
+radio_engagement_08 <- readRDS("/Users/hans-peterbakker/Dropbox/Statistics/UCTDataScience/Thesis/vehicle_cleaning/radio_engagement_08.rds")
 # and save in this workspace
 saveRDS(radio_engagement_08, "radio_engagement_08.rds")
 
+radio_engagement_08 <- readRDS("radio_engagement_08.rds")
 
 ## TV (this year, included specific dstv and toptv channels (will include them))
 
@@ -269,11 +270,11 @@ internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
 
 # Level 1: Type
 media_type_08 <- data.frame(cbind(qn = demogrs_08$qn,
-                                  rowSums(scale(newspapers_engagement_08)),
-                                  rowSums(scale(magazines_engagement_08)),
-                                  rowSums(scale(radio_engagement_08)),
-                                  rowSums(scale(tv_engagement_08)),
-                                  rowSums(scale(internet_engagement_08))))
+                                  rowSums(newspapers_engagement_08),
+                                  rowSums(magazines_engagement_08),
+                                  rowSums(radio_engagement_08),
+                                  rowSums(tv_engagement_08),
+                                  rowSums(internet_engagement_08)))
 names(media_type_08) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -285,11 +286,11 @@ media_type_08 <- media_type_08 %>%
 
 
 media_type_08_simple <- data.frame(cbind(qn = demogrs_08$qn,
-                                  rowSums(scale(newspapers_engagement_08_simple)),
-                                  rowSums(scale(magazines_engagement_08_simple)),
-                                  rowSums(scale(radio_engagement_08)),
-                                  rowSums(scale(tv_engagement_08)),
-                                  scale(internet_engagement_08_simple)))
+                                  rowSums(newspapers_engagement_08_simple),
+                                  rowSums(magazines_engagement_08_simple),
+                                  rowSums(radio_engagement_08),
+                                  rowSums(tv_engagement_08),
+                                  internet_engagement_08_simple))
 names(media_type_08_simple) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -297,6 +298,23 @@ names(media_type_08_simple) <- c("qn",
                           "tv",
                           "internet")
 media_type_08_simple <- media_type_08_simple %>%
+        mutate(all = as.vector(newspapers + magazines + radio + tv + internet))
+
+
+
+media_type_08_simple_print <- data.frame(cbind(qn = demogrs_08$qn,
+                                         rowSums(newspapers_engagement_08_simple),
+                                         rowSums(magazines_engagement_08_simple),
+                                         rowSums(radio_engagement_08),
+                                         rowSums(tv_engagement_08),
+                                         rowSums(internet_engagement_08)))
+names(media_type_08_simple_print) <- c("qn",
+                                 "newspapers",
+                                 "magazines",
+                                 "radio",
+                                 "tv",
+                                 "internet")
+media_type_08_simple_print <- media_type_08_simple_print %>%
         mutate(all = as.vector(newspapers + magazines + radio + tv + internet))
 
 # Level 2: Vehicles
@@ -314,20 +332,39 @@ media_vehicles_08_simple <- data.frame(cbind(qn = demogrs_08$qn,
                                       tv_engagement_08,
                                       internet_eng = internet_engagement_08_simple))
 
+media_vehicles_08_simple_print <- data.frame(cbind(qn = demogrs_08$qn,
+                                             newspapers_engagement_08_simple,
+                                             magazines_engagement_08_simple,
+                                             radio_engagement_08,
+                                             tv_engagement_08,
+                                             internet_engagement_08))
+
+
+
 saveRDS(media_type_08, 'media_type_08.rds')
 saveRDS(media_vehicles_08, 'media_vehicles_08.rds')
+
 saveRDS(media_type_08_simple, 'media_type_08_simple.rds')
+saveRDS(media_type_08_simple_print, 'media_type_08_simple_print.rds')
+
 saveRDS(media_vehicles_08_simple, 'media_vehicles_08_simple.rds')
+saveRDS(media_vehicles_08_simple_print, 'media_vehicles_08_simple_print.rds')
 
 media_type_08.rds <- readRDS('media_type_08.rds')
 media_vehicles_08 <- readRDS('media_vehicles_08.rds')
 media_type_08_simple <- readRDS('media_type_08_simple.rds')
 media_vehicles_08_simple <- readRDS('media_vehicles_08_simple.rds')
+media_type_08_simple_print <- readRDS('media_type_08_simple_print.rds')
+media_vehicles_08_simple_print <- readRDS('media_vehicles_08_simple_print.rds')
 
 ## 4th Demographics Set (see notes for descriptions)
 
 age <- personal_08[,'ca48co34']
+age_actual <- personal_08[,'ca48co35']# actual age..note some 999 = refusal or dont know
+age_actual[age_actual == 999] <- NA
+
 sex <- demogrs_08[,'ca91co51a']
+
 edu <- demogrs_08[,'ca91co48']
 for(i in 1: length(edu)) {
         if(edu[i] %in% c(6,7)) {
@@ -338,6 +375,57 @@ for(i in 1: length(edu)) {
         }
 }
 hh_inc <- demogrs_08[,'ca91co50']
+
+# # more levels for numeric treatment later on
+# hh_inc1 <- personal_08[,'ca49co32'] # 1 - 9
+# hh_inc2 <- personal_08[,'ca49co33'] # 0 - 9 == 10 - 19
+# hh_inc3 <- personal_08[,'ca49co34'] # 0 - 9 == 20 - 29
+# hh_inc4 <- personal_08[,'ca49co35'] # 0 - 1 == 30 - 31
+# 
+# hh_bind <- cbind.data.frame(hh_inc1,(10 + hh_inc2), (20 + hh_inc3),(30 + hh_inc4) )
+# hh_bind[is.na(hh_bind)] <- 0
+# hh_inc_alt <- rowSums(hh_bind)
+
+# #ca49co35
+# 0	R 30 000 - 39 999	531	 43.7%
+# 1	R 40 0000+	683	 56.3%
+# 2	No personal income	0	 0.0%
+# 3	Refused
+# #ca49co34
+# 0	R 7 000 - 7 999	890	 9.7%
+# 1	R 8 000 - 8 999	1037	 11.3%
+# 2	R 9 000 - 9 999	738	 8.0%
+# 3	R 10 000 - 10 999	1246	 13.6%
+# 4	R 11 000 - 11 999	486	 5.3%
+# 5	R 12 000 - 13 999	866	 9.4%
+# 6	R 14 000 - 15 999	1023	 11.1%
+# 7	R 16 000 - 19 999	1128	 12.3%
+# 8	R 20 000 - 24 999	1110	 12.1%
+# 9	R 25 000 - 29 999
+#
+# #ca49co33
+# 0	R 1100 - 1199	159	 1.9%
+# 1	R 1 200 - 1 299	333	 3.9%
+# 2	R 1 400 - 1 599	433	 5.0%
+# 3	R 1 600 - 1 999	788	 9.2%
+# 4	R 2 000 - 2 499	1012	 11.8%
+# 5	R 2 500 - 2 999	851	 9.9%
+# 6	R 3 000 - 3 999	1324	 15.4%
+# 7	R 4 000 - 4 999	1264	 14.7%
+# 8	R 5 000 - 5 999	1317	 15.3%
+# 9	R 6 000 - 6 999
+#
+# #ca49co32
+# 1	R 1 - 299	111	 5.3%
+# 2	R 300 - 399	88	 4.2%
+# 3	R 400 - 499	97	 4.6%
+# 4	R 500 - 599	151	 7.2%
+# 5	R 600 - 699	136	 6.5%
+# 6	R 700 - 799	112	 5.3%
+# 7	R 800 - 899	579	 27.5%
+# 8	R 900 - 999	429	 20.4%
+# 9	R 1 000 - 1 099
+
 race <- demogrs_08[,'ca91co51b']
 province <- demogrs_08[,'ca91co56']
 metro1 <- demogrs_08[,'ca91co57']
@@ -372,7 +460,7 @@ mar_status <- personal_08[,'ca48co09']
         
 lsm <- lsm_08[,'ca91co64']
 lsm <- ifelse(lsm == 0,10,lsm)
-
+lsm_full <- lsm
 
 # lifestyle groups total groups lsm groups 1:10
 #Value	Category (changed by 1)
@@ -406,6 +494,7 @@ table(attitudes) # check
 demographics_08 <- data.frame(qn = demogrs_08$qn,
                               pwgt = demogrs_08$pwgt,
                               age,
+                              age_actual,
                               sex,
                               edu,
                               hh_inc,
@@ -416,6 +505,7 @@ demographics_08 <- data.frame(qn = demogrs_08$qn,
                               lifestages,
                               mar_status,
                               lsm,
+                              lsm_full,
                               lifestyle,
                               attitudes)
 
@@ -463,55 +553,57 @@ demographics_08$lsm <- factor(demographics_08$lsm, ordered = TRUE)
 demographics_08$lifestyle <- factor(demographics_08$lifestyle, ordered = FALSE)
 demographics_08$attitudes <- factor(demographics_08$attitudes, ordered = FALSE)
 
+demographics_08$lsm_full <- factor(demographics_08$lsm_full, ordered = TRUE)
+
 saveRDS(demographics_08, "demographics_08.rds")
 demographics_08 <- readRDS("demographics_08.rds")
 
-# read datafiles again (if necessary)
-magazines_engagement_08 <- readRDS("magazines_engagement_08.rds")
-magazines_engagement_08_simple <- readRDS("magazines_engagement_08_simple.rds")
+# # read datafiles again (if necessary)
+# magazines_engagement_08 <- readRDS("magazines_engagement_08.rds")
+# magazines_engagement_08_simple <- readRDS("magazines_engagement_08_simple.rds")
+# 
+# newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
+# newspapers_engagement_08_simple <- readRDS("newspapers_engagement_08_simple.rds")
+# 
+# radio_engagement_08 <- readRDS("radio_engagement_08.rds")
+# tv_engagement_08 <- readRDS("tv_engagement_08.rds")
+# internet_engagement_08 <- readRDS("internet_engagement_08.rds")
+# internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
+# 
+# media_type_08 <- readRDS("media_type_08.rds")
+# media_type_08_simple <- readRDS("media_type_08_simple.rds")
+# media_vehicles_08 <- readRDS("media_vehicles_08.rds")
+# media_vehicles_08_simple <- readRDS("media_vehicles_08_simple.rds")
+# 
+# demographics_08 <- readRDS("demographics_08.rds")
 
-newspapers_engagement_08 <- readRDS("newspapers_engagement_08.rds")
-newspapers_engagement_08_simple <- readRDS("newspapers_engagement_08_simple.rds")
-
-radio_engagement_08 <- readRDS("radio_engagement_08.rds")
-tv_engagement_08 <- readRDS("tv_engagement_08.rds")
-internet_engagement_08 <- readRDS("internet_engagement_08.rds")
-internet_engagement_08_simple <- readRDS("internet_engagement_08_simple.rds")
-
-media_type_08 <- readRDS("media_type_08.rds")
-media_type_08_simple <- readRDS("media_type_08_simple.rds")
-media_vehicles_08 <- readRDS("media_vehicles_08.rds")
-media_vehicles_08_simple <- readRDS("media_vehicles_08_simple.rds")
-
-demographics_08 <- readRDS("demographics_08.rds")
-
-# #create single dataset minus non metropolitans
+# #create single datasets
 set08 <- demographics_08 %>%
         left_join(media_type_08) %>%
         left_join(media_vehicles_08)
-#%>%filter(metro != 0)
 
 set08_simple <- demographics_08 %>%
         left_join(media_type_08_simple) %>%
         left_join(media_vehicles_08_simple)
-#%>%filter(metro != 0)
+
+set08_simple_print <- demographics_08 %>%
+        left_join(media_type_08_simple_print) %>%
+        left_join(media_vehicles_08_simple_print)
 
 # get rid of zero variances:
-ind_08 <- nearZeroVar(set08[,16:ncol(set08)], saveMetrics = TRUE)
-good_set <- set08[,16:ncol(set08)][,!ind_08$zeroVar]
-set08 <- data.frame(cbind(set08[,1:15], good_set))
+ind_08 <- nearZeroVar(set08[,18:ncol(set08)], saveMetrics = TRUE)
+good_set <- set08[,18:ncol(set08)][,!ind_08$zeroVar]
+set08 <- data.frame(cbind(set08[,1:17], good_set))
 
-ind_08_simple <- nearZeroVar(set08_simple[,16:ncol(set08_simple)], saveMetrics = TRUE)
-good_set_simple <- set08_simple[,16:ncol(set08_simple)][,!ind_08_simple$zeroVar]
-set08_simple <- data.frame(cbind(set08_simple[,1:15], good_set_simple))
+ind_08_simple <- nearZeroVar(set08_simple[,18:ncol(set08_simple)], saveMetrics = TRUE)
+good_set_simple <- set08_simple[,18:ncol(set08_simple)][,!ind_08_simple$zeroVar]
+set08_simple <- data.frame(cbind(set08_simple[,1:17], good_set_simple))
 
-# scale media type and media vehicles
-set08[,16:ncol(set08)] <- scale(set08[,16:ncol(set08)])
-set08_simple[,16:ncol(set08_simple)] <- scale(set08_simple[,16:ncol(set08_simple)])
-
+ind_08_simple_print <- nearZeroVar(set08_simple_print[,18:ncol(set08_simple_print)], saveMetrics = TRUE)
+good_set_simple_print <- set08_simple_print[,18:ncol(set08_simple_print)][,!ind_08_simple_print$zeroVar]
+set08_simple_print <- data.frame(cbind(set08_simple_print[,1:17], good_set_simple_print))
 
 # save them:
 saveRDS(set08, "set08.rds")
 saveRDS(set08_simple, "set08_simple.rds")
-
-
+saveRDS(set08_simple_print, "set08_simple_print.rds")

@@ -44,7 +44,7 @@ dev.off()
 set.seed(123)
 kmeans08 <- kmeans(set08[,c("newspapers","magazines","radio", "tv", "internet","all")],
                    centers = 4,
-                   nstart = 5,
+                   nstart = 4,
                    iter.max = 100)
 
 table(kmeans08$cluster)
